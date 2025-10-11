@@ -7,7 +7,7 @@ export class ExampleService extends Service {
 
   property = true;
 
-   ask(): string {
-    return 'hello world'
+  ask(): string {
+    return 'hello world';
   }
 }

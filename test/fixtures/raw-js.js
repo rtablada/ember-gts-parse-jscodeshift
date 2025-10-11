@@ -4,7 +4,7 @@ export class ExampleService extends Service {
   @service('store') store;
   property = true;
 
-   ask() {
-    return 'hello world'
+  ask() {
+    return 'hello world';
   }
 }
