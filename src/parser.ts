@@ -2,6 +2,8 @@ import j from 'jscodeshift';
 import getParser from 'jscodeshift/dist/getParser.js';
 import ContentTag from 'content-tag';
 import type { ASTNode } from 'ast-types/lib/types';
+import { walk } from 'estree-walker';
+import type { Node } from 'estree';
 
 const BufferMap = new Map<string, Buffer>();
 
@@ -50,7 +52,14 @@ export class EmberParser implements j.Parser {
     const contents = this.#nonTemplateParser.parse(updatedSource, options);
 
     for (const templateSection of preprocessedASTs) {
-      const possibleNodesToReplace = contents.tokens;
+      walk(contents as Node, {
+        enter(node) {
+          const astNode = node as Node & { start: number; end: number };
+          if (astNode.start === templateSection.range.startChar) {
+            this.replace(templateSection as unknown as Node);
+          }
+        },
+      });
     }
 
     return contents;

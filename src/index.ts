@@ -28,4 +28,5 @@ const RAW_GJS_SRC = await readFile(FIXTURE_FILES.GJS_COMPONENT, 'utf-8');
 
 const parsedRawGJS = j.withParser(emberParser)(RAW_GJS_SRC);
 
+const results = parsedRawGJS.find(j.ClassDeclaration);
 debugger;

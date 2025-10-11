@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "content-tag": "^4.0.0",
-    "content-tag-utils": "^0.4.1"
+    "content-tag-utils": "^0.4.1",
+    "estree-walker": "^3.0.3"
   }
 }
