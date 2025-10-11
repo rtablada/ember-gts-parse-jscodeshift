@@ -21,6 +21,9 @@ importers:
       '@types/jscodeshift':
         specifier: ^17.3.0
         version: 17.3.0
+      '@types/node':
+        specifier: ^24.7.2
+        version: 24.7.2
       jscodeshift:
         specifier: ^17.3.0
         version: 17.3.0
@@ -225,6 +228,9 @@ packages:
 
   '@types/jscodeshift@17.3.0':
     resolution: {integrity: sha512-ogvGG8VQQqAQQ096uRh+d6tBHrYuZjsumHirKtvBa5qEyTMN3IQJ7apo+sw9lxaB/iKWIhbbLlF3zmAWk9XQIg==}
+
+  '@types/node@24.7.2':
+    resolution: {integrity: sha512-/NbVmcGTP+lj5oa4yiYxxeBjRivKQ5Ns1eSZeB99ExsEQ6rX5XYU1Zy/gGxY/ilqtD4Etx9mKyrPxZRetiahhA==}
 
   ast-types@0.16.1:
     resolution: {integrity: sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==}
@@ -455,6 +461,9 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  undici-types@7.14.0:
+    resolution: {integrity: sha512-QQiYxHuyZ9gQUIrmPo3IA+hUl4KYk8uSA7cHrcKd/l3p1OTpZcM0Tbp9x7FAtXdAYhlasd60ncPpgu6ihG6TOA==}
 
   update-browserslist-db@1.1.3:
     resolution: {integrity: sha512-UxhIZQ+QInVdunkDAaiazvvT/+fXL5Osr0JZlJulepYu6Jd7qJtDZjlur0emRlT71EN3ScPoE7gvsuIKKNavKw==}
@@ -739,6 +748,10 @@ snapshots:
       ast-types: 0.16.1
       recast: 0.23.11
 
+  '@types/node@24.7.2':
+    dependencies:
+      undici-types: 7.14.0
+
   ast-types@0.16.1:
     dependencies:
       tslib: 2.8.1
@@ -937,6 +950,8 @@ snapshots:
       is-number: 7.0.0
 
   tslib@2.8.1: {}
+
+  undici-types@7.14.0: {}
 
   update-browserslist-db@1.1.3(browserslist@4.26.3):
     dependencies:
