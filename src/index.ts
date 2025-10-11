@@ -23,3 +23,5 @@ const FIXTURE_FILES = {
 const RAW_JS_SRC = await readFile(FIXTURE_FILES.RAW_JS, 'utf-8');
 
 const parsedRawJS = j.withParser(emberParser)(RAW_JS_SRC);
+
+debugger;
