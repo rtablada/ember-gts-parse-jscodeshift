@@ -1,0 +1,21 @@
+{
+  "name": "ember-gts-parse-jscodeshift",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/estree": "^1.0.8",
+    "@types/jscodeshift": "^17.3.0",
+    "jscodeshift": "^17.3.0"
+  },
+  "dependencies": {
+    "content-tag": "^4.0.0",
+    "content-tag-utils": "^0.4.1"
+  }
+}
