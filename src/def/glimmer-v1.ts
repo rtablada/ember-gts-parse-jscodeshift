@@ -86,75 +86,182 @@ export function defGlimmerAst() {
 
   // CommentStatement: An HTML comment <!-- ... -->
   // Properties: type, loc, value
-  def('GlimmerCommentStatement').bases('GlimmerNode').finalize();
+  def('GlimmerCommentStatement')
+    .bases('GlimmerNode')
+    .build('value')
+    .field('value', String)
+    .finalize();
 
   // MustacheCommentStatement: A Handlebars comment {{! ... }} or {{!-- ... --}}
   // Properties: type, loc, value
-  def('GlimmerMustacheCommentStatement').bases('GlimmerNode').finalize();
+  def('GlimmerMustacheCommentStatement')
+    .bases('GlimmerNode')
+    .build('value')
+    .field('value', String)
+    .finalize();
 
   // ElementNode: An HTML element or component <div>...</div>
   // Can have attributes, modifiers, params, and children
   // Properties: type, loc, path, selfClosing, attributes, params, modifiers, comments, children, openTag, closeTag, tag, blockParams
-  def('GlimmerElementNode').bases('GlimmerNode').finalize();
+  def('GlimmerElementNode')
+    .bases('GlimmerNode')
+    .build(
+      'path',
+      'selfClosing',
+      'attributes',
+      'params',
+      'modifiers',
+      'comments',
+      'children',
+      'blockParams',
+    )
+    .field('path', def('GlimmerPathExpression'))
+    .field('selfClosing', Boolean)
+    .field('attributes', [def('GlimmerAttrNode')])
+    .field('params', [def('GlimmerVarHead')])
+    .field('modifiers', [def('GlimmerElementModifierStatement')])
+    .field('comments', [def('GlimmerMustacheCommentStatement')])
+    .field('children', [def('GlimmerNode')]) // Statement[]
+    .field('openTag', def('GlimmerNode')) // SourceSpan - using GlimmerNode as placeholder
+    .field('closeTag', or(def('GlimmerNode'), null), () => null) // Nullable<SourceSpan>
+    .field('tag', String) // accessor for path.original
+    .field('blockParams', [String])
+    .finalize();
 
   // AttrNode: An attribute on an element (e.g., class="foo")
   // Properties: type, loc, name, value
-  def('GlimmerAttrNode').bases('GlimmerNode').finalize();
+  def('GlimmerAttrNode')
+    .bases('GlimmerNode')
+    .build('name', 'value')
+    .field('name', String)
+    .field('value', def('GlimmerNode')) // AttrValue: TextNode | MustacheStatement | ConcatStatement
+    .finalize();
 
   // TextNode: Plain text content in the template
   // Properties: type, loc, chars
-  def('GlimmerTextNode').bases('GlimmerNode').finalize();
+  def('GlimmerTextNode')
+    .bases('GlimmerNode')
+    .build('chars')
+    .field('chars', String)
+    .finalize();
 
   // ConcatStatement: Concatenation of text and mustaches in attribute values
   // e.g., class="foo {{bar}}"
   // Properties: type, loc, parts (PresentArray of TextNode | MustacheStatement)
-  def('GlimmerConcatStatement').bases('GlimmerNode').finalize();
+  def('GlimmerConcatStatement')
+    .bases('GlimmerNode')
+    .build('parts')
+    .field('parts', [def('GlimmerNode')]) // PresentArray<TextNode | MustacheStatement>
+    .finalize();
 
   // SubExpression: A nested expression (helper arg1 arg2)
   // Properties: type, loc, path, params, hash
-  def('GlimmerSubExpression').bases('GlimmerCallNode').finalize();
+  def('GlimmerSubExpression')
+    .bases('GlimmerCallNode')
+    .build('path', 'params', 'hash')
+    .field('path', def('GlimmerNode')) // CallableExpression
+    .field('params', [def('GlimmerNode')]) // Expression[]
+    .field('hash', def('GlimmerHash'))
+    .finalize();
 
   // ThisHead: The 'this' keyword
   // Properties: type, loc, original (always 'this')
-  def('GlimmerThisHead').bases('GlimmerNode').finalize();
+  def('GlimmerThisHead')
+    .bases('GlimmerNode')
+    .build('original')
+    .field('original', String) // always 'this'
+    .finalize();
 
   // AtHead: An @argument reference like @name
   // Properties: type, loc, name, original (alias for name)
-  def('GlimmerAtHead').bases('GlimmerNode').finalize();
+  def('GlimmerAtHead')
+    .bases('GlimmerNode')
+    .build('name')
+    .field('name', String)
+    .field('original', String) // alias for name
+    .finalize();
 
   // VarHead: A variable reference like foo
   // Properties: type, loc, name, original (alias for name)
-  def('GlimmerVarHead').bases('GlimmerNode').finalize();
+  def('GlimmerVarHead')
+    .bases('GlimmerNode')
+    .build('name')
+    .field('name', String)
+    .field('original', String) // alias for name
+    .finalize();
 
   // PathExpression: A path like this, @arg, foo, or foo.bar.baz
   // Properties: type, loc, original, head, tail, parts (deprecated), this (deprecated), data (deprecated)
-  def('GlimmerPathExpression').bases('GlimmerNode').finalize();
+  def('GlimmerPathExpression')
+    .bases('GlimmerNode')
+    .build('original', 'head', 'tail')
+    .field('original', String)
+    .field('head', def('GlimmerNode')) // PathHead: ThisHead | AtHead | VarHead
+    .field('tail', [String])
+    .field('parts', [String]) // deprecated - readonly string[]
+    .field('this', Boolean) // deprecated
+    .field('data', Boolean) // deprecated
+    .finalize();
 
   // StringLiteral: A string value "foo" or 'foo'
   // Properties: type, loc, value, original (deprecated)
-  def('GlimmerStringLiteral').bases('GlimmerNode').finalize();
+  def('GlimmerStringLiteral')
+    .bases('GlimmerNode')
+    .build('value')
+    .field('value', String)
+    .field('original', String) // deprecated
+    .finalize();
 
   // BooleanLiteral: true or false
   // Properties: type, loc, value, original (deprecated)
-  def('GlimmerBooleanLiteral').bases('GlimmerNode').finalize();
+  def('GlimmerBooleanLiteral')
+    .bases('GlimmerNode')
+    .build('value')
+    .field('value', Boolean)
+    .field('original', Boolean) // deprecated
+    .finalize();
 
   // NumberLiteral: A numeric value like 42 or 3.14
   // Properties: type, loc, value, original (deprecated)
-  def('GlimmerNumberLiteral').bases('GlimmerNode').finalize();
+  def('GlimmerNumberLiteral')
+    .bases('GlimmerNode')
+    .build('value')
+    .field('value', Number)
+    .field('original', Number) // deprecated
+    .finalize();
 
   // UndefinedLiteral: The undefined value
   // Properties: type, loc, value (always undefined), original (deprecated)
-  def('GlimmerUndefinedLiteral').bases('GlimmerNode').finalize();
+  def('GlimmerUndefinedLiteral')
+    .bases('GlimmerNode')
+    .build('value')
+    .field('value', or(undefined, null)) // undefined
+    .field('original', or(undefined, null)) // deprecated
+    .finalize();
 
   // NullLiteral: The null value
   // Properties: type, loc, value (always null), original (deprecated)
-  def('GlimmerNullLiteral').bases('GlimmerNode').finalize();
+  def('GlimmerNullLiteral')
+    .bases('GlimmerNode')
+    .build('value')
+    .field('value', or(null, undefined)) // null
+    .field('original', or(null, undefined)) // deprecated
+    .finalize();
 
   // Hash: A collection of key-value pairs (foo=bar baz=qux)
   // Properties: type, loc, pairs
-  def('GlimmerHash').bases('GlimmerNode').finalize();
+  def('GlimmerHash')
+    .bases('GlimmerNode')
+    .build('pairs')
+    .field('pairs', [def('GlimmerHashPair')])
+    .finalize();
 
   // HashPair: A single key-value pair in a hash
   // Properties: type, loc, key, value
-  def('GlimmerHashPair').bases('GlimmerNode').finalize();
+  def('GlimmerHashPair')
+    .bases('GlimmerNode')
+    .build('key', 'value')
+    .field('key', String)
+    .field('value', def('GlimmerNode')) // Expression
+    .finalize();
 }
