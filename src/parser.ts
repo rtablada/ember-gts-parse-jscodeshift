@@ -5,7 +5,7 @@ import type { ASTNode } from 'ast-types/lib/types';
 import { walk } from 'estree-walker';
 import type { Node } from 'estree';
 import { Transformer, coordinatesOf } from 'content-tag-utils';
-import { parse as templateRecastParse } from 'ember-template-recast'
+import { parse as templateRecastParse } from 'ember-template-recast';
 
 const BufferMap = new Map<string, Buffer>();
 
@@ -47,7 +47,7 @@ export class EmberParser implements j.Parser {
   }
 
   parse(source: string, options?: { jsParser: j.Parser }): ASTNode {
-		const t = new Transformer(source);
+    const t = new Transformer(source);
 
     const updatedSource = t.toString({ placeholders: true });
 
@@ -55,11 +55,19 @@ export class EmberParser implements j.Parser {
 
     for (const templateSection of t.parseResults) {
       const coordinates = coordinatesOf(source, templateSection);
-      
+
       walk(contents as Node, {
         enter(node) {
           if (node.loc?.start.line === coordinates.line) {
-            let tree = templateRecastParse(templateSection.contents);
+            const tree = templateRecastParse(templateSection.contents);
+            // tree.type = `Glimmer${tree.type}` as typeof tree.type;
+
+            walk(tree, {
+              enter(node) {
+                node.type = `Glimmer${node.type}` as typeof node.type;
+              },
+            });
+
             this.replace(tree as unknown as Node);
           }
         },

@@ -4,14 +4,10 @@ import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { join as pathJoin } from 'node:path';
 import j from 'jscodeshift';
-import { Type } from 'ast-types';
+import { Type, builtInTypes } from 'ast-types';
+import { defGlimmerAst } from './def/glimmer-v1.ts';
 
-const { def } = Type;
-
-// Try to tell ast-types about the Template node type
-// It's not working though
-def('Template')
-  .bases('Node')
+defGlimmerAst();
 
 // Get current file path and directory (ES module equivalent of __filename and __dirname)
 const __filename = fileURLToPath(import.meta.url);
@@ -36,5 +32,5 @@ const RAW_GJS_SRC = await readFile(FIXTURE_FILES.GJS_COMPONENT, 'utf-8');
 
 const parsedRawGJS = j.withParser(emberParser)(RAW_GJS_SRC);
 
-const results = parsedRawGJS.find(j.ClassDeclaration);
+const results = parsedRawGJS.find('GlimmerTextNode').nodes()[0];
 debugger;
