@@ -1,8 +1,17 @@
 import { Type } from 'ast-types';
-const { def } = Type;
+const { def, or } = Type;
 
 export function defGlimmerAst() {
   def('GlimmerNode').bases('Node').finalize();
+
+  // StripFlags: Whitespace stripping configuration for mustache/block statements
+  // Properties: open, close
+  def('GlimmerStripFlags')
+    .bases('GlimmerNode')
+    .build('open', 'close')
+    .field('open', Boolean)
+    .field('close', Boolean)
+    .finalize();
 
   // CommonProgram: Base interface for program-like nodes that contain statements
   // Extends BaseNode and provides common body property
@@ -16,25 +25,64 @@ export function defGlimmerAst() {
   // Block: A block of statements with parameters (e.g., {{#each}} block)
   // Used in BlockStatement's program and inverse
   // Properties: type, loc, body, params, chained?, blockParams
-  def('GlimmerBlock').bases('GlimmerCommonProgram').finalize();
+  def('GlimmerBlock')
+    .bases('GlimmerCommonProgram')
+    .build('body', 'params', 'blockParams')
+    .field('params', [def('GlimmerVarHead')])
+    .field('chained', Boolean, () => false)
+    .field('blockParams', [String])
+    .finalize();
 
   // Template: The root node of a template, contains top-level statements
   // Properties: type, loc, body, blockParams
-  def('GlimmerTemplate').bases('GlimmerCommonProgram').finalize();
+  def('GlimmerTemplate')
+    .bases('GlimmerCommonProgram')
+    .build('body', 'blockParams')
+    .field('blockParams', [String])
+    .finalize();
+
+  def('GlimmerCallNode').bases('GlimmerNode').finalize();
 
   // MustacheStatement: A mustache interpolation {{...}} or {{{...}}}
   // Can be trusting (unescaped) or escaped
   // Properties: type, loc, path, params, hash, trusting, strip, escaped (deprecated)
-  def('GlimmerMustacheStatement').bases('GlimmerNode').finalize();
+  def('GlimmerMustacheStatement')
+    .bases('GlimmerCallNode')
+    .build('path', 'params', 'hash', 'trusting')
+    .field('path', def('GlimmerNode')) // Expression
+    .field('params', [def('GlimmerNode')]) // Expression[]
+    .field('hash', def('GlimmerHash'))
+    .field('trusting', Boolean)
+    .field('strip', def('GlimmerStripFlags'))
+    .field('escaped', Boolean) // deprecated
+    .finalize();
 
   // BlockStatement: A block helper {{#helper}}...{{/helper}}
   // Contains a program block and optional inverse (else) block
   // Properties: type, loc, path, params, hash, program, inverse?, openStrip, inverseStrip, closeStrip, chained?
-  def('GlimmerBlockStatement').bases('GlimmerNode').finalize();
+  def('GlimmerBlockStatement')
+    .bases('GlimmerCallNode')
+    .build('path', 'params', 'hash', 'program')
+    .field('path', def('GlimmerNode')) // CallableExpression
+    .field('params', [def('GlimmerNode')]) // Expression[]
+    .field('hash', def('GlimmerHash'))
+    .field('program', def('GlimmerBlock'))
+    .field('inverse', or(def('GlimmerBlock'), null), () => null)
+    .field('openStrip', def('GlimmerStripFlags'))
+    .field('inverseStrip', def('GlimmerStripFlags'))
+    .field('closeStrip', def('GlimmerStripFlags'))
+    .field('chained', Boolean, () => false)
+    .finalize();
 
   // ElementModifierStatement: A modifier on an element {{modifier}}
   // Properties: type, loc, path, params, hash
-  def('GlimmerElementModifierStatement').bases('GlimmerNode').finalize();
+  def('GlimmerElementModifierStatement')
+    .bases('GlimmerCallNode')
+    .build('path', 'params', 'hash')
+    .field('path', def('GlimmerNode')) // CallableExpression
+    .field('params', [def('GlimmerNode')]) // Expression[]
+    .field('hash', def('GlimmerHash'))
+    .finalize();
 
   // CommentStatement: An HTML comment <!-- ... -->
   // Properties: type, loc, value
@@ -64,7 +112,7 @@ export function defGlimmerAst() {
 
   // SubExpression: A nested expression (helper arg1 arg2)
   // Properties: type, loc, path, params, hash
-  def('GlimmerSubExpression').bases('GlimmerNode').finalize();
+  def('GlimmerSubExpression').bases('GlimmerCallNode').finalize();
 
   // ThisHead: The 'this' keyword
   // Properties: type, loc, original (always 'this')
