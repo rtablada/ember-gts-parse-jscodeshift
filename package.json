@@ -26,7 +26,12 @@
   },
   "dependencies": {
     "content-tag": "^4.0.0",
-    "content-tag-utils": "^0.4.1",
+    "content-tag-utils": "^0.6.0",
+    "ember-template-recast": "^6.1.5",
     "estree-walker": "^3.0.3"
+  },
+  "volta": {
+    "node": "24.2.0",
+    "pnpm": "10.15.0"
   }
 }

@@ -4,6 +4,8 @@ import ContentTag from 'content-tag';
 import type { ASTNode } from 'ast-types/lib/types';
 import { walk } from 'estree-walker';
 import type { Node } from 'estree';
+import { Transformer, coordinatesOf } from 'content-tag-utils';
+import { parse as templateRecastParse } from 'ember-template-recast'
 
 const BufferMap = new Map<string, Buffer>();
 
@@ -45,18 +47,20 @@ export class EmberParser implements j.Parser {
   }
 
   parse(source: string, options?: { jsParser: j.Parser }): ASTNode {
-    const preprocessedASTs = this.#contentTagProcessor.parse(source);
+		const t = new Transformer(source);
 
-    const updatedSource = this.replaceSource(source, preprocessedASTs);
+    const updatedSource = t.toString({ placeholders: true });
 
     const contents = this.#nonTemplateParser.parse(updatedSource, options);
 
-    for (const templateSection of preprocessedASTs) {
+    for (const templateSection of t.parseResults) {
+      const coordinates = coordinatesOf(source, templateSection);
+      
       walk(contents as Node, {
         enter(node) {
-          const astNode = node as Node & { start: number; end: number };
-          if (astNode.start === templateSection.range.startChar) {
-            this.replace(templateSection as unknown as Node);
+          if (node.loc?.start.line === coordinates.line) {
+            let tree = templateRecastParse(templateSection.contents);
+            this.replace(tree as unknown as Node);
           }
         },
       });

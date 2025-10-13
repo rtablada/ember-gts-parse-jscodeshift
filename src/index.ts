@@ -4,6 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { join as pathJoin } from 'node:path';
 import j from 'jscodeshift';
+import { Type } from 'ast-types';
+
+const { def } = Type;
+
+// Try to tell ast-types about the Template node type
+// It's not working though
+def('Template')
+  .bases('Node')
 
 // Get current file path and directory (ES module equivalent of __filename and __dirname)
 const __filename = fileURLToPath(import.meta.url);
