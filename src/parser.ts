@@ -57,7 +57,7 @@ export class EmberParser implements j.Parser {
       const coordinates = coordinatesOf(source, templateSection);
       const tree = templateRecastParse(templateSection.contents);
 
-      walk(tree, {
+      walk(tree as unknown as Node, {
         enter(node) {
           node.type = `Glimmer${node.type}` as typeof node.type;
         },
@@ -67,7 +67,6 @@ export class EmberParser implements j.Parser {
         enter(node: Node) {
           if (node.loc?.start.line === coordinates.line) {
             // tree.type = `Glimmer${tree.type}` as typeof tree.type;
-
 
             this.replace(tree as unknown as Node);
           }
