@@ -31,7 +31,8 @@
     "content-tag": "^4.0.0",
     "content-tag-utils": "^0.6.0",
     "ember-template-recast": "^6.1.5",
-    "estree-walker": "^3.0.3"
+    "estree-walker": "^3.0.3",
+    "recast": "^0.23.11"
   },
   "resolutions": {
     "ast-types": "0.16.1"

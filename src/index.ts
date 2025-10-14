@@ -1,13 +1,12 @@
 import { diff } from 'jest-diff';
 import { EmberParser } from './parser.ts';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { join as pathJoin } from 'node:path';
 import j from 'jscodeshift';
-import { Type, builtInTypes } from 'ast-types';
 import { defGlimmerAst } from './def/glimmer-v1.ts';
-import type { ASTv1 } from '@glimmer/syntax';
+import { print } from './printer.ts';
 
 defGlimmerAst();
 
@@ -34,17 +33,16 @@ const RAW_GJS_SRC = await readFile(FIXTURE_FILES.GJS_COMPONENT, 'utf-8');
 
 const parsedRawGJS = j.withParser(emberParser)(RAW_GJS_SRC);
 
-const results = parsedRawGJS.find(j.StringLiteral).forEach((element) => {
-  element.node.value = element.node.value.toUpperCase();
+parsedRawGJS.find(j.StringLiteral).forEach((element) => {
+  if (element.node.value.trim()) {
+    element.node.value = element.node.value.toUpperCase();
+  }
 });
 
-console.log(
-  diff(
-    RAW_GJS_SRC,
-    results.toSource({
-      parser: emberParser,
-    }),
-  ),
-);
+parsedRawGJS.find('GlimmerTextNode').forEach((element) => {
+  element.node.chars = element.node.chars.toUpperCase();
+});
 
-// await writeFile(FIXTURE_FILES.GJS_COMPONENT, parsedRawGJS.toSource());
+const ast = parsedRawGJS.getAST()[0];
+
+console.log(diff(RAW_GJS_SRC, print(ast)));
