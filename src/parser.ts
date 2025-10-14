@@ -55,18 +55,19 @@ export class EmberParser implements j.Parser {
 
     for (const templateSection of t.parseResults) {
       const coordinates = coordinatesOf(source, templateSection);
+      const tree = templateRecastParse(templateSection.contents);
+
+      walk(tree, {
+        enter(node) {
+          node.type = `Glimmer${node.type}` as typeof node.type;
+        },
+      });
 
       walk(contents as Node, {
-        enter(node) {
+        enter(node: Node) {
           if (node.loc?.start.line === coordinates.line) {
-            const tree = templateRecastParse(templateSection.contents);
             // tree.type = `Glimmer${tree.type}` as typeof tree.type;
 
-            walk(tree, {
-              enter(node) {
-                node.type = `Glimmer${node.type}` as typeof node.type;
-              },
-            });
 
             this.replace(tree as unknown as Node);
           }
