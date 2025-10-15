@@ -3,17 +3,30 @@ import type { Node } from 'estree';
 
 import { print as templateRecastPrint } from 'ember-template-recast';
 import recast from 'recast';
-import type { ASTPath } from 'jscodeshift';
+import type { ASTPath, Collection } from 'jscodeshift';
+import type { ASTNode } from 'ast-types/lib/types';
 const { builders: b } = recast.types;
 
-export function print(ast: ASTPath<unknown>, options?: recast.Options): string {
+function isCodeShiftCollection(
+  ast: ASTPath<unknown> | Collection<unknown>,
+): ast is Collection<unknown> {
+  return (ast as Collection<unknown>).paths !== undefined;
+}
+
+export function print(
+  ast: ASTPath<unknown> | Collection<unknown>,
+  options?: recast.Options,
+): string {
   const stuffToReplace = new Map<string, string>();
+
+  if (isCodeShiftCollection(ast)) {
+    ast = ast.paths()[0];
+  } else {
+    ast = ast as ASTPath<Node>;
+  }
 
   walk(ast as unknown as Node, {
     enter(node) {
-      if (node.type === 'TemplateTag') {
-        node.content.replace(template.parse(node.content));
-      }
       // @ts-expect-error This is fine
       if (node.type === 'GlimmerTemplate') {
         const uuid = Math.random();
@@ -43,7 +56,7 @@ export function print(ast: ASTPath<unknown>, options?: recast.Options): string {
     },
   });
 
-  let nicePrettyJS = recast.print(ast, options).code;
+  let nicePrettyJS = recast.print(ast as unknown as ASTNode, options).code;
 
   for (const [js, glimmer] of stuffToReplace) {
     nicePrettyJS = nicePrettyJS.replace(js, `<template>${glimmer}</template>`);

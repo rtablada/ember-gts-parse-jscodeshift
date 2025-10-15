@@ -1,5 +1,5 @@
-import { ASTv1 } from '@glimmer/syntax';
-import { Type } from 'ast-types/lib/types';
+import type { ASTv1 } from '@glimmer/syntax';
+import type { Type } from 'ast-types/lib/types';
 
 /**
  * Each glimmer type has to be wrapped in a Type<T> to be compatible with ast-types and jscodeshift

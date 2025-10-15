@@ -42,4 +42,4 @@ parsedRawGJS.find(g.GlimmerTextNode).forEach((element) => {
 
 const ast = parsedRawGJS.getAST()[0];
 
-console.log(diff(RAW_GJS_SRC, print(ast)));
+console.log(diff(RAW_GJS_SRC, print(parsedRawGJS)));

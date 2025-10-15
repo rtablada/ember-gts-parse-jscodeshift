@@ -13,6 +13,12 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
   },
   tseslint.configs.recommended,
+  {
+    files: ['**/*.ts'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'error',
+    },
+  },
   eslintPluginPrettierRecommended,
   eslintConfigPrettier,
 ]);

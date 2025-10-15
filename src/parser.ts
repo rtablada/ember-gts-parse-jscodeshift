@@ -1,4 +1,4 @@
-import j from 'jscodeshift';
+import type j from 'jscodeshift';
 import getParser from 'jscodeshift/dist/getParser.js';
 import type { ASTNode } from 'ast-types/lib/types';
 import { walk } from 'estree-walker';
