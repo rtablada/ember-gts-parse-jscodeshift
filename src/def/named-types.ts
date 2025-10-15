@@ -1,6 +1,9 @@
 import { ASTv1 } from '@glimmer/syntax';
 import { Type } from 'ast-types/lib/types';
 
+/**
+ * Each glimmer type has to be wrapped in a Type<T> to be compatible with ast-types and jscodeshift
+ */
 export interface GlimmerNamedTypes {
   GlimmerNode: Type<ASTv1.Node>;
   GlimmerStripFlags: Type<ASTv1.StripFlags>;
