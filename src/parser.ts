@@ -16,7 +16,7 @@ export class EmberParser implements j.Parser {
     }
   }
 
-  parse(source: string, options?: { jsParser: j.Parser }): ASTNode {
+  parse(source: string, options?: unknown): ASTNode {
     const t = new Transformer(source);
 
     const updatedSource = t.toString({ placeholders: true });
