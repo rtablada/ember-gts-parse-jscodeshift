@@ -9,7 +9,8 @@ export class ExampleComponent extends Component {
     return 'hello world'
   }
 
+  // This might not work
   <template>
-    <h2>My Component</h2>
+    <h2>My Component🐈‍⬛</h2>
   </template>
 }

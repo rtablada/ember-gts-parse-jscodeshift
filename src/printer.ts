@@ -1,16 +1,19 @@
-import type { ASTNode } from 'ast-types/lib/types';
 import { walk } from 'estree-walker';
 import type { Node } from 'estree';
 
 import { print as templateRecastPrint } from 'ember-template-recast';
 import recast from 'recast';
+import type { ASTPath } from 'jscodeshift';
 const { builders: b } = recast.types;
 
-export function print(ast: ASTNode, options?: recast.Options): string {
+export function print(ast: ASTPath<unknown>, options?: recast.Options): string {
   const stuffToReplace = new Map<string, string>();
 
   walk(ast as unknown as Node, {
     enter(node) {
+      if (node.type === 'TemplateTag') {
+        node.content.replace(template.parse(node.content));
+      }
       // @ts-expect-error This is fine
       if (node.type === 'GlimmerTemplate') {
         const uuid = Math.random();

@@ -1,8 +1,13 @@
-import { Type } from 'ast-types';
-const { def, or } = Type;
+import typesPlugin, { type Fork } from 'ast-types/lib/types';
+import type { GlimmerNamedTypes } from './named-types.ts';
 
-export function defGlimmerAst() {
-  def('GlimmerNode').bases('Node').finalize();
+export function GlimmerPlugin(fork: Fork) {
+  const types = fork.use(typesPlugin);
+  const Type = types.Type;
+  const finalize = types.finalize;
+  const or = Type.or;
+  const def = Type.def;
+  def('GlimmerNode').bases('Node');
 
   // StripFlags: Whitespace stripping configuration for mustache/block statements
   // Properties: open, close
@@ -10,8 +15,7 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('open', 'close')
     .field('open', Boolean)
-    .field('close', Boolean)
-    .finalize();
+    .field('close', Boolean);
 
   // CommonProgram: Base interface for program-like nodes that contain statements
   // Extends BaseNode and provides common body property
@@ -19,8 +23,7 @@ export function defGlimmerAst() {
   def('GlimmerCommonProgram')
     .bases('GlimmerNode')
     .build('body')
-    .field('body', [def('GlimmerNode')])
-    .finalize();
+    .field('body', [def('GlimmerNode')]);
 
   // Block: A block of statements with parameters (e.g., {{#each}} block)
   // Used in BlockStatement's program and inverse
@@ -30,18 +33,16 @@ export function defGlimmerAst() {
     .build('body', 'params', 'blockParams')
     .field('params', [def('GlimmerVarHead')])
     .field('chained', Boolean, () => false)
-    .field('blockParams', [String])
-    .finalize();
+    .field('blockParams', [String]);
 
   // Template: The root node of a template, contains top-level statements
   // Properties: type, loc, body, blockParams
   def('GlimmerTemplate')
     .bases('GlimmerCommonProgram')
     .build('body', 'blockParams')
-    .field('blockParams', [String])
-    .finalize();
+    .field('blockParams', [String]);
 
-  def('GlimmerCallNode').bases('GlimmerNode').finalize();
+  def('GlimmerCallNode').bases('GlimmerNode');
 
   // MustacheStatement: A mustache interpolation {{...}} or {{{...}}}
   // Can be trusting (unescaped) or escaped
@@ -54,8 +55,7 @@ export function defGlimmerAst() {
     .field('hash', def('GlimmerHash'))
     .field('trusting', Boolean)
     .field('strip', def('GlimmerStripFlags'))
-    .field('escaped', Boolean) // deprecated
-    .finalize();
+    .field('escaped', Boolean); // deprecated
 
   // BlockStatement: A block helper {{#helper}}...{{/helper}}
   // Contains a program block and optional inverse (else) block
@@ -71,8 +71,7 @@ export function defGlimmerAst() {
     .field('openStrip', def('GlimmerStripFlags'))
     .field('inverseStrip', def('GlimmerStripFlags'))
     .field('closeStrip', def('GlimmerStripFlags'))
-    .field('chained', Boolean, () => false)
-    .finalize();
+    .field('chained', Boolean, () => false);
 
   // ElementModifierStatement: A modifier on an element {{modifier}}
   // Properties: type, loc, path, params, hash
@@ -81,24 +80,21 @@ export function defGlimmerAst() {
     .build('path', 'params', 'hash')
     .field('path', def('GlimmerNode')) // CallableExpression
     .field('params', [def('GlimmerNode')]) // Expression[]
-    .field('hash', def('GlimmerHash'))
-    .finalize();
+    .field('hash', def('GlimmerHash'));
 
   // CommentStatement: An HTML comment <!-- ... -->
   // Properties: type, loc, value
   def('GlimmerCommentStatement')
     .bases('GlimmerNode')
     .build('value')
-    .field('value', String)
-    .finalize();
+    .field('value', String);
 
   // MustacheCommentStatement: A Handlebars comment {{! ... }} or {{!-- ... --}}
   // Properties: type, loc, value
   def('GlimmerMustacheCommentStatement')
     .bases('GlimmerNode')
     .build('value')
-    .field('value', String)
-    .finalize();
+    .field('value', String);
 
   // ElementNode: An HTML element or component <div>...</div>
   // Can have attributes, modifiers, params, and children
@@ -125,8 +121,7 @@ export function defGlimmerAst() {
     .field('openTag', def('GlimmerNode')) // SourceSpan - using GlimmerNode as placeholder
     .field('closeTag', or(def('GlimmerNode'), null), () => null) // Nullable<SourceSpan>
     .field('tag', String) // accessor for path.original
-    .field('blockParams', [String])
-    .finalize();
+    .field('blockParams', [String]);
 
   // AttrNode: An attribute on an element (e.g., class="foo")
   // Properties: type, loc, name, value
@@ -134,16 +129,14 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('name', 'value')
     .field('name', String)
-    .field('value', def('GlimmerNode')) // AttrValue: TextNode | MustacheStatement | ConcatStatement
-    .finalize();
+    .field('value', def('GlimmerNode')); // AttrValue: TextNode | MustacheStatement | ConcatStatement
 
   // TextNode: Plain text content in the template
   // Properties: type, loc, chars
   def('GlimmerTextNode')
     .bases('GlimmerNode')
     .build('chars')
-    .field('chars', String)
-    .finalize();
+    .field('chars', String);
 
   // ConcatStatement: Concatenation of text and mustaches in attribute values
   // e.g., class="foo {{bar}}"
@@ -151,8 +144,7 @@ export function defGlimmerAst() {
   def('GlimmerConcatStatement')
     .bases('GlimmerNode')
     .build('parts')
-    .field('parts', [def('GlimmerNode')]) // PresentArray<TextNode | MustacheStatement>
-    .finalize();
+    .field('parts', [def('GlimmerNode')]); // PresentArray<TextNode | MustacheStatement>
 
   // SubExpression: A nested expression (helper arg1 arg2)
   // Properties: type, loc, path, params, hash
@@ -161,16 +153,14 @@ export function defGlimmerAst() {
     .build('path', 'params', 'hash')
     .field('path', def('GlimmerNode')) // CallableExpression
     .field('params', [def('GlimmerNode')]) // Expression[]
-    .field('hash', def('GlimmerHash'))
-    .finalize();
+    .field('hash', def('GlimmerHash'));
 
   // ThisHead: The 'this' keyword
   // Properties: type, loc, original (always 'this')
   def('GlimmerThisHead')
     .bases('GlimmerNode')
     .build('original')
-    .field('original', String) // always 'this'
-    .finalize();
+    .field('original', String); // always 'this'
 
   // AtHead: An @argument reference like @name
   // Properties: type, loc, name, original (alias for name)
@@ -178,8 +168,7 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('name')
     .field('name', String)
-    .field('original', String) // alias for name
-    .finalize();
+    .field('original', String); // alias for name
 
   // VarHead: A variable reference like foo
   // Properties: type, loc, name, original (alias for name)
@@ -187,8 +176,7 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('name')
     .field('name', String)
-    .field('original', String) // alias for name
-    .finalize();
+    .field('original', String); // alias for name
 
   // PathExpression: A path like this, @arg, foo, or foo.bar.baz
   // Properties: type, loc, original, head, tail, parts (deprecated), this (deprecated), data (deprecated)
@@ -200,8 +188,7 @@ export function defGlimmerAst() {
     .field('tail', [String])
     .field('parts', [String]) // deprecated - readonly string[]
     .field('this', Boolean) // deprecated
-    .field('data', Boolean) // deprecated
-    .finalize();
+    .field('data', Boolean); // deprecated
 
   // StringLiteral: A string value "foo" or 'foo'
   // Properties: type, loc, value, original (deprecated)
@@ -209,8 +196,7 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('value')
     .field('value', String)
-    .field('original', String) // deprecated
-    .finalize();
+    .field('original', String); // deprecated
 
   // BooleanLiteral: true or false
   // Properties: type, loc, value, original (deprecated)
@@ -218,8 +204,7 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('value')
     .field('value', Boolean)
-    .field('original', Boolean) // deprecated
-    .finalize();
+    .field('original', Boolean); // deprecated
 
   // NumberLiteral: A numeric value like 42 or 3.14
   // Properties: type, loc, value, original (deprecated)
@@ -227,8 +212,7 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('value')
     .field('value', Number)
-    .field('original', Number) // deprecated
-    .finalize();
+    .field('original', Number); // deprecated
 
   // UndefinedLiteral: The undefined value
   // Properties: type, loc, value (always undefined), original (deprecated)
@@ -236,8 +220,7 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('value')
     .field('value', or(undefined, null)) // undefined
-    .field('original', or(undefined, null)) // deprecated
-    .finalize();
+    .field('original', or(undefined, null)); // deprecated
 
   // NullLiteral: The null value
   // Properties: type, loc, value (always null), original (deprecated)
@@ -245,16 +228,14 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('value')
     .field('value', or(null, undefined)) // null
-    .field('original', or(null, undefined)) // deprecated
-    .finalize();
+    .field('original', or(null, undefined)); // deprecated
 
   // Hash: A collection of key-value pairs (foo=bar baz=qux)
   // Properties: type, loc, pairs
   def('GlimmerHash')
     .bases('GlimmerNode')
     .build('pairs')
-    .field('pairs', [def('GlimmerHashPair')])
-    .finalize();
+    .field('pairs', [def('GlimmerHashPair')]);
 
   // HashPair: A single key-value pair in a hash
   // Properties: type, loc, key, value
@@ -262,6 +243,39 @@ export function defGlimmerAst() {
     .bases('GlimmerNode')
     .build('key', 'value')
     .field('key', String)
-    .field('value', def('GlimmerNode')) // Expression
-    .finalize();
+    .field('value', def('GlimmerNode')); // Expression
+
+  finalize();
+
+  const namedTypes = types.namedTypes as unknown as GlimmerNamedTypes;
+
+  return {
+    GlimmerNode: namedTypes.GlimmerNode,
+    GlimmerStripFlags: namedTypes.GlimmerStripFlags,
+    GlimmerCommonProgram: namedTypes.GlimmerCommonProgram,
+    GlimmerBlock: namedTypes.GlimmerBlock,
+    GlimmerTemplate: namedTypes.GlimmerTemplate,
+    GlimmerCallNode: namedTypes.GlimmerCallNode,
+    GlimmerMustacheStatement: namedTypes.GlimmerMustacheStatement,
+    GlimmerBlockStatement: namedTypes.GlimmerBlockStatement,
+    GlimmerElementModifierStatement: namedTypes.GlimmerElementModifierStatement,
+    GlimmerCommentStatement: namedTypes.GlimmerCommentStatement,
+    GlimmerMustacheCommentStatement: namedTypes.GlimmerMustacheCommentStatement,
+    GlimmerElementNode: namedTypes.GlimmerElementNode,
+    GlimmerAttrNode: namedTypes.GlimmerAttrNode,
+    GlimmerTextNode: namedTypes.GlimmerTextNode,
+    GlimmerConcatStatement: namedTypes.GlimmerConcatStatement,
+    GlimmerSubExpression: namedTypes.GlimmerSubExpression,
+    GlimmerThisHead: namedTypes.GlimmerThisHead,
+    GlimmerAtHead: namedTypes.GlimmerAtHead,
+    GlimmerVarHead: namedTypes.GlimmerVarHead,
+    GlimmerPathExpression: namedTypes.GlimmerPathExpression,
+    GlimmerStringLiteral: namedTypes.GlimmerStringLiteral,
+    GlimmerBooleanLiteral: namedTypes.GlimmerBooleanLiteral,
+    GlimmerNumberLiteral: namedTypes.GlimmerNumberLiteral,
+    GlimmerUndefinedLiteral: namedTypes.GlimmerUndefinedLiteral,
+    GlimmerNullLiteral: namedTypes.GlimmerNullLiteral,
+    GlimmerHash: namedTypes.GlimmerHash,
+    GlimmerHashPair: namedTypes.GlimmerHashPair,
+  };
 }
