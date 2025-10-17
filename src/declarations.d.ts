@@ -1,5 +1,3 @@
-declare module 'jscodeshift/dist/getParser.js' {
-  import type { Parser } from 'jscodeshift';
+import type { Parser } from 'jscodeshift';
 
-  export default function getParser(name: string): Parser;
-}
+export function getParser(name: string): Parser;
