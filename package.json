@@ -1,7 +1,7 @@
 {
-  "name": "ember-gts-parse-jscodeshift",
+  "name": "glimmer-jscodeshift",
   "version": "1.0.0",
-  "description": "",
+  "description": "Parser, type definitions, and utilities for working with GJS/GST templates in jscodeshift scripts.",
   "type": "module",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
@@ -23,6 +23,7 @@
     "@types/estree": "^1.0.8",
     "@types/jscodeshift": "^17.3.0",
     "@types/node": "^24.7.2",
+    "ast-types": "^0.16.1",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -35,11 +36,11 @@
   },
   "dependencies": {
     "@glimmer/syntax": "^0.95.0",
-    "ast-types": "^0.16.1",
     "content-tag": "^4.0.0",
     "content-tag-utils": "^0.6.0",
     "ember-template-recast": "^6.1.5",
     "estree-walker": "^3.0.3",
+    "local-pkg": "^1.1.2",
     "recast": "^0.23.11"
   },
   "pnpm": {
@@ -50,5 +51,9 @@
   "volta": {
     "node": "24.2.0",
     "pnpm": "10.15.0"
+  },
+  "peerDependencies": {
+    "ast-types": "^0.16.1",
+    "jscodeshift": "^17.3.0"
   }
 }

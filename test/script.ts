@@ -2,9 +2,10 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join as pathJoin } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { diff } from 'jest-diff';
-import { g, EmberParser, print } from '../src/index.js';
+import { EmberParser, print } from '../src/index.js';
 
 import j from 'jscodeshift';
+import { glimmerCodeshift } from '../src/index.js';
 
 // Get current file path and directory (ES module equivalent of __filename and __dirname)
 const __filename = fileURLToPath(import.meta.url);
@@ -20,16 +21,18 @@ const FIXTURE_FILES = {
   GTS_COMPONENT: pathJoin(fixtureDirPath, 'component.gts'),
 };
 
+const g = glimmerCodeshift(j);
+
 // Now you can use __dirname as you would in CommonJS
 const RAW_JS_SRC = await readFile(FIXTURE_FILES.RAW_JS, 'utf-8');
 
-const parsedRawJS = j.withParser(emberParser)(RAW_JS_SRC);
+const parsedRawJS = g.withParser(emberParser)(RAW_JS_SRC);
 
 const RAW_GJS_SRC = await readFile(FIXTURE_FILES.GJS_COMPONENT, 'utf-8');
 
-const parsedRawGJS = j.withParser(emberParser)(RAW_GJS_SRC);
+const parsedRawGJS = g.withParser(emberParser)(RAW_GJS_SRC);
 
-parsedRawGJS.find(j.StringLiteral).forEach((element) => {
+parsedRawGJS.find(g.StringLiteral).forEach((element) => {
   if (element.node.value.trim()) {
     element.node.value = element.node.value.toUpperCase();
   }

@@ -1,6 +1,6 @@
-# Ember GTS Codeshift
+# Glimmer Jscodeshift
 
-This package provides a plugin for AST Types as well as a parser for jscodeshift to parse Glimmer templates embedded in GJS and JTS files.
+This package provides a plugin for AST Types as well as a parser for jscodeshift to parse GJS and JTS files including their embedded templates.
 
 > [!NOTE]
 > `ember-template-recast` is used to parse template content of files, however the type strings for AST Nodes have to be prepended with `Glimmer` to avoid conflicts with existing types in `ast-types`.
@@ -16,11 +16,11 @@ npm install ember-gts-jscodeshift
 > Due to the way that `ast-types` works, you must install a single version of `ast-types` in your project for this to work correctly.
 > To do this, use yarn resolutions or [npm overrides](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#overrides) to force a single version of `ast-types` to be used across all dependencies.
 
-## Usage Codeshift
+## Usage In Programatic JSCodeShift Scripts
 
 ```ts
 import j from 'jscodeshift';
-import { EmberParser, g, print } from 'ember-gts-jscodeshift';
+import { glimmerCodeshift, print } from 'ember-gts-jscodeshift';
 
 const fileContents = `
 import { service } from '@ember/service';
@@ -39,10 +39,9 @@ export class ExampleComponent extends Component {
   </template>
 }`;
 
-const parser = new EmberParser();
-const emberCodeshift = j.withParser(parser);
+const g = glimmerCodeshift(j);
 
-const doc = emberCodeshift(fileContents);
+const doc = g(fileContents);
 
 doc.find(g.GlimmerTextNode).forEach((element) => {
   if (element.node.chars.trim()) {
@@ -68,18 +67,14 @@ const parser = new EmberParser('babylon');
 
 ### AST Types
 
-When working with jscodeshift and `find` methods, you need to pass in a type that the `ast-types` library knows about.
-`ember-gts-jscodeshift` registers the necessary types to work with Glimmer templates embedded in GJS and JTS files, and exports the type definitions as the `g` object.
-These types are wrapped and redeclared from `ember-template-recast` with a `Glimmer` prefix to avoid conflicts with existing types in `ast-types`.
+When working with the `ast-types` package, you need to be able to setup the proper def calls for the local instance of ast-types used by recast or jscodeshift.
+This package exports a `GlimmerPlugin` function that will add defs to an `ast-types` registry and return typed named nodes for Glimmer templates.
 
 ```ts
-import { g } from 'ember-gts-jscodeshift';
+import { EmberParser } from 'ember-gts-jscodeshift';
+import { use } from 'ast-types';
 
-doc.find(g.GlimmerTextNode).forEach((element) => {
-  if (element.node.chars.trim()) {
-    element.node.chars = element.node.chars.toUpperCase();
-  }
-});
+const glimmerTypes = use(GlimmerPlugin);
 ```
 
 You can see the full list of available nodes in the [named-types.ts](./src/def/named-types.ts) file.

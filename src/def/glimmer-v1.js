@@ -1,4 +1,5 @@
 import typesPlugin from 'ast-types/lib/types';
+import corePlugin from 'ast-types/lib/def/core';
 
 /**
  * This is an AST Types plugin that defines the Glimmer (Handlebars) AST nodes.
@@ -6,6 +7,7 @@ import typesPlugin from 'ast-types/lib/types';
  * It returns a set of type definitions to be used with jscodeshift or ast-types.
  */
 export function GlimmerPlugin(fork) {
+  fork.use(corePlugin);
   /**
    * This gets the local instance of ast-type for extension
    *

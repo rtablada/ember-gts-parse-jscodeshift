@@ -50,6 +50,10 @@ export class EmberParser {
       walk(tree, {
         enter(node) {
           node.type = `Glimmer${node.type}`;
+
+          this.replace({
+            ...node,
+          });
         },
       });
 
