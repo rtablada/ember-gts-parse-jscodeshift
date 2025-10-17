@@ -9,12 +9,8 @@ This package provides a plugin for AST Types as well as a parser for jscodeshift
 ## Installation
 
 ```bash
-npm install ember-gts-jscodeshift
+pnpm install -D ember-gts-jscodeshift
 ```
-
-> [!NOTE]
-> Due to the way that `ast-types` works, you must install a single version of `ast-types` in your project for this to work correctly.
-> To do this, use yarn resolutions or [npm overrides](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#overrides) to force a single version of `ast-types` to be used across all dependencies.
 
 ## Usage In Programatic JSCodeShift Scripts
 
