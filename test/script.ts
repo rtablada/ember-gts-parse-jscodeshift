@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join as pathJoin } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { diff } from 'jest-diff';
-import { g, EmberParser, print } from '../src/index.ts';
+import { g, EmberParser, print } from '../src/index.js';
 
 import j from 'jscodeshift';
 

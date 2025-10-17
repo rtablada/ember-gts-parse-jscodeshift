@@ -1,31 +1,36 @@
 import { walk } from 'estree-walker';
-import type { Node } from 'estree';
 
 import { print as templateRecastPrint } from 'ember-template-recast';
 import recast from 'recast';
-import type { ASTPath, Collection } from 'jscodeshift';
-import type { ASTNode } from 'ast-types/lib/types';
 const { builders: b } = recast.types;
 
-function isCodeShiftCollection(
-  ast: ASTPath<unknown> | Collection<unknown>,
-): ast is Collection<unknown> {
-  return (ast as Collection<unknown>).paths !== undefined;
+/**
+ *
+ * @import {ASTPath, Collection} from 'jscodeshift';
+ * @param { ASTPath<unknown> | Collection<unknown>} ast
+ * @returns ast is Collection<unknown>
+ */
+function isCodeShiftCollection(ast) {
+  return ast.paths !== undefined;
 }
 
-export function print(
-  ast: ASTPath<unknown> | Collection<unknown>,
-  options?: recast.Options,
-): string {
-  const stuffToReplace = new Map<string, string>();
+/**
+ *
+ * @param { ASTPath<unknown> | Collection<unknown>} ast
+ * @param {recast.Options} options?
+ * @returns string
+ */
+export function print(ast, options) {
+  /**
+   * @type {Map<string, string>}
+   */
+  const stuffToReplace = new Map();
 
   if (isCodeShiftCollection(ast)) {
     ast = ast.paths()[0];
-  } else {
-    ast = ast as ASTPath<Node>;
   }
 
-  walk(ast as unknown as Node, {
+  walk(ast, {
     enter(node) {
       // @ts-expect-error This is fine
       if (node.type === 'GlimmerTemplate') {
@@ -35,15 +40,12 @@ export function print(
           null,
         );
 
-        this.replace(placeholder as unknown as Node);
+        this.replace(placeholder);
 
-        walk(node as unknown as Node, {
+        walk(node, {
           enter(node2) {
             if (node2.type?.startsWith('Glimmer')) {
-              node2.type = node2.type.replace(
-                /^Glimmer/,
-                '',
-              ) as typeof node2.type;
+              node2.type = node2.type.replace(/^Glimmer/, '');
             }
           },
         });
@@ -56,7 +58,7 @@ export function print(
     },
   });
 
-  let nicePrettyJS = recast.print(ast as unknown as ASTNode, options).code;
+  let nicePrettyJS = recast.print(ast, options).code;
 
   for (const [js, glimmer] of stuffToReplace) {
     nicePrettyJS = nicePrettyJS.replace(js, `<template>${glimmer}</template>`);

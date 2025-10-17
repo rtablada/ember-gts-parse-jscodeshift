@@ -1,12 +1,11 @@
-import typesPlugin, { type Fork } from 'ast-types/lib/types';
-import type { GlimmerNamedTypes } from './named-types.ts';
+import typesPlugin from 'ast-types/lib/types';
 
 /**
  * This is an AST Types plugin that defines the Glimmer (Handlebars) AST nodes.
  *
  * It returns a set of type definitions to be used with jscodeshift or ast-types.
  */
-export function GlimmerPlugin(fork: Fork) {
+export function GlimmerPlugin(fork) {
   /**
    * This gets the local instance of ast-type for extension
    *
@@ -258,8 +257,11 @@ export function GlimmerPlugin(fork: Fork) {
 
   finalize();
 
-  // SAFETY: Types for AST-Types only includes the static values, this is the set of defs from above
-  const namedTypes = types.namedTypes as unknown as GlimmerNamedTypes;
+  /**
+   * Type assertion to cast the ast-types namedTypes to GlimmerNamedTypes.
+   * @type {import('./glimmer-v1.d.ts').GlimmerNamedTypes}
+   */
+  const namedTypes = types.namedTypes;
 
   return {
     GlimmerNode: namedTypes.GlimmerNode,

@@ -1,8 +1,9 @@
 import type { ASTv1 } from '@glimmer/syntax';
 import type { Type } from 'ast-types/lib/types';
+import { type Fork } from 'ast-types/lib/types';
 
 /**
- * Each glimmer type has to be wrapped in a Type<T> to be compatible with ast-types and jscodeshift
+ * This interface provides a mapping of Glimmer AST node types to their corresponding Type definitions from the `ast-types` library.
  */
 export interface GlimmerNamedTypes {
   GlimmerNode: Type<ASTv1.Node>;
@@ -33,3 +34,5 @@ export interface GlimmerNamedTypes {
   GlimmerHash: Type<ASTv1.Hash>;
   GlimmerHashPair: Type<ASTv1.HashPair>;
 }
+
+export function GlimmerPlugin(fork: Fork): GlimmerNamedTypes;
