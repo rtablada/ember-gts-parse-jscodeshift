@@ -49,17 +49,19 @@ export class EmberParser {
 
       walk(tree, {
         enter(node) {
-          node.type = `Glimmer${node.type}`;
+          const x = { ...node };
+          x.type = `Glimmer${node.type}`;
 
-          this.replace({
-            ...node,
-          });
+          this.replace(x);
         },
       });
 
       walk(contents, {
         enter(node) {
-          if (node.loc?.start.line === coordinates.line) {
+          if (
+            node.loc?.start.line === coordinates.line &&
+            !node.type.startsWith('Glimmer')
+          ) {
             this.replace(tree);
           }
         },

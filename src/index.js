@@ -18,7 +18,7 @@ export const setupAstTypes = async () => {
  * @import { GlimmerNamedTypes } from './def/glimmer-v1';
  * @param {j.JSCodeshift} codeshift
  * @param {j.Parser} nonTemplateParser
- * @returns j.JSCodeshift & GlimmerNamedTypes
+ * @returns {j.JSCodeshift & GlimmerNamedTypes}
  */
 export function glimmerCodeshift(codeshift, nonTemplateParser) {
   const parser = new EmberParser(nonTemplateParser);
