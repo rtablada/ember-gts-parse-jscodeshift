@@ -9,14 +9,14 @@ This package provides a plugin for AST Types as well as a parser for jscodeshift
 ## Installation
 
 ```bash
-pnpm install -D ember-gts-jscodeshift
+pnpm install -D glimmer-jscodeshift jscodeshift
 ```
 
 ## Usage In Programatic JSCodeShift Scripts
 
 ```ts
 import j from 'jscodeshift';
-import { glimmerCodeshift, print } from 'ember-gts-jscodeshift';
+import { glimmerCodeshift, print } from 'glimmer-jscodeshift';
 
 const fileContents = `
 import { service } from '@ember/service';
@@ -56,7 +56,7 @@ When omitted, this will use the default parser from jscodeshift.
 
 ```ts
 // Example using the babylon parser instead of ts
-import { EmberParser } from 'ember-gts-jscodeshift';
+import { EmberParser } from 'glimmer-jscodeshift';
 
 const parser = new EmberParser('babylon');
 ```
@@ -67,7 +67,7 @@ When working with the `ast-types` package, you need to be able to setup the prop
 This package exports a `GlimmerPlugin` function that will add defs to an `ast-types` registry and return typed named nodes for Glimmer templates.
 
 ```ts
-import { EmberParser } from 'ember-gts-jscodeshift';
+import { EmberParser } from 'glimmer-jscodeshift';
 import { use } from 'ast-types';
 
 const glimmerTypes = use(GlimmerPlugin);
@@ -81,7 +81,7 @@ Since this mixes AST node types from raw JS recast and `ember-template-recast`, 
 This package exports a `print` function that can be used to print the modified AST back to source code.
 
 ```ts
-import { print } from 'ember-gts-jscodeshift';
+import { print } from 'glimmer-jscodeshift';
 
 // doc is a jscodeshift collection or recast node
 console.log(print(doc));
