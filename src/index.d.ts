@@ -1,5 +1,5 @@
 import type { GlimmerNamedTypes } from './def/glimmer-v1.js';
-export { EmberParser } from './parser.d.ts';
+export type { EmberParser } from './parser.d.ts';
 export { print } from './printer.js';
 import type * as j from 'jscodeshift';
 
