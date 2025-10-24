@@ -17,10 +17,10 @@ function isCodeShiftCollection(ast) {
 /**
  *
  * @param { ASTPath<unknown> | Collection<unknown>} ast
- * @param {recast.Options} options?
+ * @param {recast.Options} options
  * @returns string
  */
-export function print(ast, options) {
+export function print(ast, options = {}) {
   /**
    * @type {Map<string, string>}
    */
@@ -32,6 +32,12 @@ export function print(ast, options) {
 
   walk(ast, {
     enter(node) {
+      if (node.type === 'GlimmerClassDeclaration') {
+        node.type = 'ClassDeclaration';
+      } else if (node.type === 'GlimmerClassBody') {
+        node.type = 'ClassBody';
+      }
+
       // @ts-expect-error This is fine
       if (node.type === 'GlimmerTemplate') {
         const uuid = Math.random();

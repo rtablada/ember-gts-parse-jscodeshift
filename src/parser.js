@@ -56,6 +56,10 @@ export class EmberParser {
         },
       });
 
+      if (tree.type === 'Template') {
+        tree.type = 'GlimmerTemplate';
+      }
+
       walk(contents, {
         enter(node) {
           if (
