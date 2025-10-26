@@ -14,7 +14,12 @@
   "files": [
     "src"
   ],
-  "scripts": {},
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -23,6 +28,7 @@
     "@types/estree": "^1.0.8",
     "@types/jscodeshift": "^17.3.0",
     "@types/node": "^24.7.2",
+    "@vitest/ui": "^4.0.3",
     "ast-types": "^0.16.1",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
@@ -32,7 +38,8 @@
     "jiti": "^2.6.1",
     "jscodeshift": "^17.3.0",
     "prettier": "^3.6.2",
-    "typescript-eslint": "^8.46.0"
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^4.0.3"
   },
   "dependencies": {
     "@glimmer/syntax": "^0.95.0",
