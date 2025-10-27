@@ -3,6 +3,8 @@ import { walk } from 'estree-walker';
 import { print as templateRecastPrint } from 'ember-template-recast';
 import recast from 'recast';
 const { builders: b } = recast.types;
+import { cloneNode } from './clone-node.js';
+import { cloneDeep } from 'lodash-es';
 
 /**
  *
@@ -30,6 +32,8 @@ export function print(ast, options = {}) {
     ast = ast.paths()[0];
   }
 
+  ast = cloneDeep(ast.node);
+
   walk(ast, {
     enter(node) {
       if (node.type === 'GlimmerClassDeclaration') {
@@ -51,7 +55,9 @@ export function print(ast, options = {}) {
         walk(node, {
           enter(node2) {
             if (node2.type?.startsWith('Glimmer')) {
-              node2.type = node2.type.replace(/^Glimmer/, '');
+              this.replace(
+                cloneNode(node2, () => node2.type.replace(/^Glimmer/, '')),
+              );
             }
           },
         });

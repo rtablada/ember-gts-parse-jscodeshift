@@ -2,6 +2,9 @@ import getParser from 'jscodeshift/dist/getParser.js';
 import { walk } from 'estree-walker';
 import { Transformer, coordinatesOf } from 'content-tag-utils';
 import { parse as templateRecastParse } from 'ember-template-recast';
+import jscodeshift from 'jscodeshift';
+import { GlimmerPlugin } from './def/glimmer-v1';
+import { cloneNode } from './clone-node.js';
 
 /**
  * @implements {jimport('jscodeshift').Parser}
@@ -49,10 +52,7 @@ export class EmberParser {
 
       walk(tree, {
         enter(node) {
-          const x = { ...node };
-          x.type = `Glimmer${node.type}`;
-
-          this.replace(x);
+          this.replace(cloneNode(node, () => `Glimmer${node.type}`));
         },
       });
 
@@ -63,7 +63,10 @@ export class EmberParser {
       walk(contents, {
         enter(node) {
           if (
+            node.type !== 'File' &&
+            node.type !== 'Program' &&
             node.loc?.start.line === coordinates.line &&
+            // @TODO: coordinate column would be nice to compare too...
             !node.type.startsWith('Glimmer')
           ) {
             this.replace(tree);
