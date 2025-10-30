@@ -35,6 +35,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.4.0",
     "jest-diff": "^30.2.0",
+    "lodash-es": "^4.17.21",
     "jiti": "^2.6.1",
     "jscodeshift": "^17.3.0",
     "prettier": "^3.6.2",
@@ -43,12 +44,9 @@
   },
   "dependencies": {
     "@glimmer/syntax": "^0.95.0",
-    "content-tag": "^4.0.0",
     "content-tag-utils": "^0.6.0",
     "ember-template-recast": "^6.1.5",
     "estree-walker": "^3.0.3",
-    "local-pkg": "^1.1.2",
-    "lodash-es": "^4.17.21",
     "recast": "^0.23.11"
   },
   "pnpm": {
