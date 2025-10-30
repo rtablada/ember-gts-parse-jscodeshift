@@ -3,9 +3,8 @@ import { walk } from 'estree-walker';
 import { Transformer, coordinatesOf } from 'content-tag-utils';
 import { parse as templateRecastParse } from 'ember-template-recast';
 
-/**
- * @implements {jimport('jscodeshift').Parser}
- */
+import { cloneNode } from './clone-node.js';
+
 export class EmberParser {
   /**
    * @type {import('jscodeshift').Parser}
@@ -49,10 +48,7 @@ export class EmberParser {
 
       walk(tree, {
         enter(node) {
-          const x = { ...node };
-          x.type = `Glimmer${node.type}`;
-
-          this.replace(x);
+          this.replace(cloneNode(node, () => `Glimmer${node.type}`));
         },
       });
 
@@ -63,7 +59,10 @@ export class EmberParser {
       walk(contents, {
         enter(node) {
           if (
+            node.type !== 'File' &&
+            node.type !== 'Program' &&
             node.loc?.start.line === coordinates.line &&
+            // @TODO: coordinate column would be nice to compare too...
             !node.type.startsWith('Glimmer')
           ) {
             this.replace(tree);

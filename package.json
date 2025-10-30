@@ -48,6 +48,7 @@
     "ember-template-recast": "^6.1.5",
     "estree-walker": "^3.0.3",
     "local-pkg": "^1.1.2",
+    "lodash-es": "^4.17.21",
     "recast": "^0.23.11"
   },
   "pnpm": {

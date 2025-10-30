@@ -1,5 +1,16 @@
 import typesPlugin from 'ast-types/lib/types';
 import corePlugin from 'ast-types/lib/def/core';
+import recast from 'recast';
+
+function lightAssign(target, ...sources) {
+  sources.forEach((source) => {
+    Object.keys(source).forEach((key) => {
+      if (target[key] === undefined) {
+        target[key] = source[key];
+      }
+    });
+  });
+}
 
 /**
  * This is an AST Types plugin that defines the Glimmer (Handlebars) AST nodes.
@@ -19,7 +30,7 @@ export function GlimmerPlugin(fork) {
   const finalize = types.finalize;
   const or = Type.or;
   const def = Type.def;
-  def('GlimmerNode').bases('Node');
+  def('GlimmerNode').build().bases('Node');
 
   // StripFlags: Whitespace stripping configuration for mustache/block statements
   // Properties: open, close
@@ -264,34 +275,67 @@ export function GlimmerPlugin(fork) {
    * @type {import('./glimmer-v1.d.ts').GlimmerNamedTypes}
    */
   const namedTypes = types.namedTypes;
+  const builders = types.builders;
+
+  // Recast has readonly properties on namedTypes/builders, so lightAssign is
+  // basically Object.assign but only assigns if the property is undefined
+  lightAssign(recast.types.namedTypes, namedTypes);
+  lightAssign(recast.types.builders, builders);
 
   return {
     GlimmerNode: namedTypes.GlimmerNode,
+    glimmerNode: builders.glimmerNode,
     GlimmerStripFlags: namedTypes.GlimmerStripFlags,
+    glimmerStripFlags: builders.glimmerStripFlags,
     GlimmerCommonProgram: namedTypes.GlimmerCommonProgram,
+    glimmerCommonProgram: builders.glimmerCommonProgram,
     GlimmerBlock: namedTypes.GlimmerBlock,
+    glimmerBlock: builders.glimmerBlock,
     GlimmerTemplate: namedTypes.GlimmerTemplate,
+    glimmerTemplate: builders.glimmerTemplate,
     GlimmerCallNode: namedTypes.GlimmerCallNode,
+    glimmerCallNode: builders.glimmerCallNode,
     GlimmerMustacheStatement: namedTypes.GlimmerMustacheStatement,
+    glimmerMustacheStatement: builders.glimmerMustacheStatement,
     GlimmerBlockStatement: namedTypes.GlimmerBlockStatement,
+    glimmerBlockStatement: builders.glimmerBlockStatement,
     GlimmerElementModifierStatement: namedTypes.GlimmerElementModifierStatement,
+    glimmerElementModifierStatement: builders.glimmerElementModifierStatement,
     GlimmerCommentStatement: namedTypes.GlimmerCommentStatement,
+    glimmerCommentStatement: builders.glimmerCommentStatement,
     GlimmerMustacheCommentStatement: namedTypes.GlimmerMustacheCommentStatement,
+    glimmerMustacheCommentStatement: builders.glimmerMustacheCommentStatement,
     GlimmerElementNode: namedTypes.GlimmerElementNode,
+    glimmerElementNode: builders.glimmerElementNode,
     GlimmerAttrNode: namedTypes.GlimmerAttrNode,
+    glimmerAttrNode: builders.glimmerAttrNode,
     GlimmerTextNode: namedTypes.GlimmerTextNode,
+    glimmerTextNode: builders.glimmerTextNode,
     GlimmerConcatStatement: namedTypes.GlimmerConcatStatement,
+    glimmerConcatStatement: builders.glimmerConcatStatement,
     GlimmerSubExpression: namedTypes.GlimmerSubExpression,
+    glimmerSubExpression: builders.glimmerSubExpression,
     GlimmerThisHead: namedTypes.GlimmerThisHead,
+    glimmerThisHead: builders.glimmerThisHead,
     GlimmerAtHead: namedTypes.GlimmerAtHead,
+    glimmerAtHead: builders.glimmerAtHead,
     GlimmerVarHead: namedTypes.GlimmerVarHead,
+    glimmerVarHead: builders.glimmerVarHead,
     GlimmerPathExpression: namedTypes.GlimmerPathExpression,
+    glimmerPathExpression: builders.glimmerPathExpression,
     GlimmerStringLiteral: namedTypes.GlimmerStringLiteral,
+    glimmerStringLiteral: builders.glimmerStringLiteral,
     GlimmerBooleanLiteral: namedTypes.GlimmerBooleanLiteral,
+    glimmerBooleanLiteral: builders.glimmerBooleanLiteral,
     GlimmerNumberLiteral: namedTypes.GlimmerNumberLiteral,
+    glimmerNumberLiteral: builders.glimmerNumberLiteral,
     GlimmerUndefinedLiteral: namedTypes.GlimmerUndefinedLiteral,
+    glimmerUndefinedLiteral: builders.glimmerUndefinedLiteral,
     GlimmerNullLiteral: namedTypes.GlimmerNullLiteral,
+    glimmerNullLiteral: builders.glimmerNullLiteral,
     GlimmerHash: namedTypes.GlimmerHash,
+    glimmerHash: builders.glimmerHash,
     GlimmerHashPair: namedTypes.GlimmerHashPair,
+    glimmerHashPair: builders.glimmerHashPair,
   };
 }
