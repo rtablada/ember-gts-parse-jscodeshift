@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { glimmerCodeshift, print } from '../../../src/index.js';
 import j from 'jscodeshift';
-import { diff } from 'jest-diff';
 
 const fixturePath = join(process.cwd(), 'test/fixtures/basic-html-only.gjs');
 const source = readFileSync(fixturePath, 'utf-8');

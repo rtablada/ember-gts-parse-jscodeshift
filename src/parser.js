@@ -2,13 +2,9 @@ import getParser from 'jscodeshift/dist/getParser.js';
 import { walk } from 'estree-walker';
 import { Transformer, coordinatesOf } from 'content-tag-utils';
 import { parse as templateRecastParse } from 'ember-template-recast';
-import jscodeshift from 'jscodeshift';
-import { GlimmerPlugin } from './def/glimmer-v1';
+
 import { cloneNode } from './clone-node.js';
 
-/**
- * @implements {jimport('jscodeshift').Parser}
- */
 export class EmberParser {
   /**
    * @type {import('jscodeshift').Parser}
