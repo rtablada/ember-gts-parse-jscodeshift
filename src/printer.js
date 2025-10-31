@@ -44,6 +44,8 @@ export function print(ast, options = {}) {
 
       // @ts-expect-error This is fine
       if (node.type === 'GlimmerTemplate') {
+        node.type = 'Template';
+
         const uuid = Math.random();
         const placeholder = b.classProperty(
           b.identifier('__gts__' + uuid),
@@ -53,11 +55,13 @@ export function print(ast, options = {}) {
         this.replace(placeholder);
 
         walk(node, {
-          enter(node2) {
-            if (node2.type?.startsWith('Glimmer')) {
-              this.replace(
-                cloneNode(node2, () => node2.type.replace(/^Glimmer/, '')),
+          enter(innerNode) {
+            if (innerNode.type?.startsWith('Glimmer')) {
+              let replacement = cloneNode(innerNode, () =>
+                innerNode.type.replace(/^Glimmer/, ''),
               );
+
+              this.replace(replacement);
             }
           },
         });
