@@ -1,6 +1,6 @@
 {
   "name": "glimmer-jscodeshift",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Parser, type definitions, and utilities for working with GJS/GST templates in jscodeshift scripts.",
   "type": "module",
   "main": "./src/index.js",
